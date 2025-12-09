@@ -314,7 +314,7 @@ const SpecsSection = ({ isDark, primaryColor, secondaryColor }: SpecsSectionProp
             }}
           >
             <Setting2 size={16} variant="Bold" color={primaryColor} />
-            <Typography variant="caption" sx={{ fontWeight: 700, color: primaryColor, letterSpacing: 1.5 }}>
+          <Typography variant="caption" sx={{ fontWeight: 700, color: primaryColor, letterSpacing: 1.5 }}>
               <FormattedMessage id="gosafe-specs-header-chip" defaultMessage="SPECIFICATIONS" />
             </Typography>
           </Box>
