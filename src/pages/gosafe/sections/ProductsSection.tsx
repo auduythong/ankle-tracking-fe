@@ -1,4 +1,4 @@
-import { alpha, Box, Chip, Container, Grid, Stack, Typography, useTheme } from '@mui/material';
+import { alpha, Box, Chip, Container, Grid, Stack, Typography } from '@mui/material';
 import { FormattedMessage, useIntl, IntlShape } from 'react-intl';
 import { BatteryFull, Bluetooth, Crown, Gps, Location, MagicStar, ShieldSecurity, Simcard, Star, TickCircle } from 'iconsax-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,7 +9,17 @@ import ankleBraceletGpsTracker4 from '../../../assets/images/gosafe-g737-offende
 import ankleBraceletGpsTracker5 from '../../../assets/images/gosafe-g737-offender-tracker-5.png';
 import g737HomeBeacon from '../../../assets/images/g737-home-beacon.png';
 import gpsTrackerPowerBank from '../../../assets/images/gps-tracker-power-bank.png';
-
+import safeImg from '../../../../public/images/safe.png';
+import manageImg from '../../../../public/images/manage.png';
+import prisonImg from '../../../../public/images/prison.png';
+import batteryImg from '../../../../public/images/battery.png';
+import biggerBatteryImg from '../../../../public/images/bigger-battery-of-gps-tracker-power-bank.png';
+import afbeeldingImg from '../../../../public/images/afbeelding.png';
+import waterSplashImg from '../../../../public/images/water-splash.png';
+import closeUpOfPrinted from '../../../../public/images/close-up-of-a-printed-circuit-board-sheila-terryscience-photo-library.png';
+import trackingMap from '../../../../public/images/tracking-map.png';
+import iotImg from '../../../../public/images/iot.png';
+import signalImg from '../../../../public/images/signal.png';
 interface ProductsSectionProps {
   isDark: boolean;
   primaryColor: string;
@@ -86,7 +96,7 @@ const getProducts = (intl: IntlShape): Product[] => [
           defaultMessage: 'Gửi cảnh báo khi phạm khu vực cấm hoặc vi phạm quy định.'
         }),
         icon: <Gps size={32} variant="Bold" />,
-        image: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?auto=format&fit=crop&w=800&q=80'
+        image: trackingMap
       },
       {
         title: intl.formatMessage({ id: 'gosafe-product-g737-detail-2-title', defaultMessage: 'Không thể cắt dây' }),
@@ -96,7 +106,7 @@ const getProducts = (intl: IntlShape): Product[] => [
           defaultMessage: 'Mọi tác động đều được phát hiện và gửi cảnh báo ngay lập tức.'
         }),
         icon: <ShieldSecurity size={32} variant="Bold" />,
-        image: 'https://images.unsplash.com/photo-1555949963-aa79dcee981c?auto=format&fit=crop&w=800&q=80'
+        image: safeImg
       },
       {
         title: intl.formatMessage({ id: 'gosafe-product-g737-detail-3-title', defaultMessage: 'Giảm tải nhà tù' }),
@@ -106,7 +116,7 @@ const getProducts = (intl: IntlShape): Product[] => [
           defaultMessage: 'Cho phép phạm nhân hòa nhập cộng đồng nhưng vẫn đảm bảo an ninh.'
         }),
         icon: <MagicStar size={32} variant="Bold" />,
-        image: 'https://images.unsplash.com/photo-1585155967849-91c73653ace6?auto=format&fit=crop&w=800&q=80'
+        image: prisonImg
       },
       {
         title: intl.formatMessage({ id: 'gosafe-product-g737-detail-4-title', defaultMessage: 'Quản lý hiệu quả' }),
@@ -116,7 +126,7 @@ const getProducts = (intl: IntlShape): Product[] => [
           defaultMessage: 'Giúp cơ quan quản lý ra quyết định nhanh, nhờ dữ liệu giám sát thời gian thực.'
         }),
         icon: <Simcard size={32} variant="Bold" />,
-        image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80'
+        image: manageImg
       }
     ]
   },
@@ -160,7 +170,7 @@ const getProducts = (intl: IntlShape): Product[] => [
           defaultMessage: 'Hoạt động liền mạch với G737, mở rộng vùng giám sát indoor.'
         }),
         icon: <Bluetooth size={32} variant="Bold" />,
-        image: 'https://images.unsplash.com/photo-1563770095128-4258afda4757?auto=format&fit=crop&w=800&q=80'
+        image: iotImg
       },
       {
         title: intl.formatMessage({ id: 'gosafe-product-beacon-detail-2-title', defaultMessage: 'Tầm phát 100m' }),
@@ -170,7 +180,7 @@ const getProducts = (intl: IntlShape): Product[] => [
           defaultMessage: 'Tầm phát 100m giúp định vị không cần GPS.'
         }),
         icon: <Location size={32} variant="Bold" />,
-        image: 'https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?auto=format&fit=crop&w=800&q=80'
+        image: signalImg
       },
       {
         title: intl.formatMessage({ id: 'gosafe-product-beacon-detail-3-title', defaultMessage: 'Cảnh báo dịch chuyển' }),
@@ -190,7 +200,7 @@ const getProducts = (intl: IntlShape): Product[] => [
           defaultMessage: 'Pin lên đến 4 năm, không cần bảo trì nhiều.'
         }),
         icon: <BatteryFull size={32} variant="Bold" />,
-        image: 'https://images.unsplash.com/photo-1619641472917-762607343632?auto=format&fit=crop&w=800&q=80'
+        image: batteryImg
       }
     ]
   },
@@ -232,7 +242,7 @@ const getProducts = (intl: IntlShape): Product[] => [
           defaultMessage: 'Dung lượng lớn, dùng 1 hoặc 2 pin lithium tùy chọn.'
         }),
         icon: <BatteryFull size={32} variant="Bold" />,
-        image: 'https://images.unsplash.com/photo-1609091839311-d5365f9ff1c5?auto=format&fit=crop&w=800&q=80'
+        image: biggerBatteryImg
       },
       {
         title: intl.formatMessage({ id: 'gosafe-product-powerbank-detail-2-title', defaultMessage: 'Bền bỉ' }),
@@ -242,7 +252,7 @@ const getProducts = (intl: IntlShape): Product[] => [
           defaultMessage: 'Chịu nhiệt độ từ -40°C đến +70°C.'
         }),
         icon: <ShieldSecurity size={32} variant="Bold" />,
-        image: 'https://images.unsplash.com/photo-1615615228002-890bb61c6e10?auto=format&fit=crop&w=800&q=80'
+        image: afbeeldingImg
       },
       {
         title: intl.formatMessage({ id: 'gosafe-product-powerbank-detail-3-title', defaultMessage: 'Chống nước IP67' }),
@@ -252,7 +262,7 @@ const getProducts = (intl: IntlShape): Product[] => [
           defaultMessage: 'Chống nước & bụi IP67, hoạt động ngoài trời ổn định.'
         }),
         icon: <TickCircle size={32} variant="Bold" />,
-        image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80'
+        image: waterSplashImg
       },
       {
         title: intl.formatMessage({ id: 'gosafe-product-powerbank-detail-4-title', defaultMessage: 'An toàn tuyệt đối' }),
@@ -262,7 +272,7 @@ const getProducts = (intl: IntlShape): Product[] => [
           defaultMessage: 'Bảo vệ ngắn mạch, quá dòng, quá áp, cực kỳ an toàn.'
         }),
         icon: <ShieldSecurity size={32} variant="Bold" />,
-        image: 'https://images.unsplash.com/photo-1563770095128-4258afda4757?auto=format&fit=crop&w=800&q=80'
+        image: closeUpOfPrinted
       }
     ]
   }

@@ -34,10 +34,6 @@
     "typeRoots": ["./types", "./node_modules/@types"],
     "types": ["vite/client"]
   },
-  "include": [
-    "src",
-    "tailwind.config.js",
-    "vite.config.ts"
-  ],
+  "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

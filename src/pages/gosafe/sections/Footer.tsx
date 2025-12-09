@@ -15,7 +15,7 @@ const Footer = ({ isDark, primaryColor }: FooterProps) => {
   const theme = useTheme();
 
   // Style constants
-  const dotColor = isDark ? '#333' : '#e5e5e5';
+
   const footerBg = isDark ? '#020617' : '#F8F9FC';
   const borderColor = isDark ? alpha('#fff', 0.1) : alpha('#000', 0.08);
 

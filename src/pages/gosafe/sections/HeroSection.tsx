@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, Stack, Typography, alpha, useTheme } from '@mui/material';
+import { Box, Button, Container, Grid, Stack, Typography, alpha } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ArrowRight, Gps, ShieldTick, Global, ShieldSecurity } from 'iconsax-react';
 import { motion } from 'framer-motion';

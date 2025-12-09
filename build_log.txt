@@ -1,0 +1,7 @@
+src/pages/gosafe/index.tsx(13,10): error TS6133: 'faqs' is declared but its value is never read.
+src/pages/gosafe/sections/ContactSection.tsx(53,9): error TS6133: 'dotColor' is declared but its value is never read.
+src/pages/gosafe/sections/FAQSection.tsx(29,9): error TS6133: 'dotColor' is declared but its value is never read.
+src/pages/gosafe/sections/Footer.tsx(18,9): error TS6133: 'dotColor' is declared but its value is never read.
+src/pages/gosafe/sections/HeroSection.tsx(1,66): error TS6133: 'useTheme' is declared but its value is never read.
+src/pages/gosafe/sections/ProductsSection.tsx(1,64): error TS6133: 'useTheme' is declared but its value is never read.
+src/settings.ts(8,10): error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.

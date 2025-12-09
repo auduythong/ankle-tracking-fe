@@ -10,7 +10,7 @@ import ProductsSection from './sections/ProductsSection';
 import SpecsSection from './sections/SpecsSection';
 import ContactSection from './sections/ContactSection';
 import FAQSection from './sections/FAQSection';
-import { faqs, faqsGosafe } from 'pages/landing/data';
+import { faqsGosafe } from 'pages/landing/data';
 import Footer from './sections/Footer';
 
 const GosafeLanding = () => {

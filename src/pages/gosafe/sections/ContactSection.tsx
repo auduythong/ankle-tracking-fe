@@ -50,7 +50,7 @@ const ContactSection = ({ isDark, primaryColor, secondaryColor }: ContactSection
   };
 
   // Style Constants
-  const dotColor = isDark ? '#333' : '#e5e5e5';
+
   const cardBg = isDark ? alpha(theme.palette.background.default, 0.01) : '#fff'; // Nền card trong suốt nhẹ
   const borderColor = isDark ? alpha('#fff', 0.1) : alpha('#000', 0.08);
   const inputBg = isDark ? alpha('#fff', 0.05) : '#F9FAFB';

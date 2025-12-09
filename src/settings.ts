@@ -5,6 +5,6 @@ import logoProd from 'assets/logo/vnpt-vtc.svg';
 export const ENV = import.meta.env.VITE_APP_ENV;
 
 export default {
-  isDev: process.env.NODE_ENV == 'development',
+  isDev: import.meta.env.DEV,
   logoDefault: ENV === 'staging' ? logoStaging : logoProd
 };

@@ -26,7 +26,7 @@ const FAQSection = ({ faqs, isDark, primaryColor, secondaryColor }: FAQSectionPr
   };
 
   // Style constants
-  const dotColor = isDark ? '#333' : '#e5e5e5';
+
   // Màu nền khi Active: Sáng hơn nền chung một chút
   const activeBg = isDark ? alpha(primaryColor, 0.1) : '#fff';
   const borderColor = isDark ? alpha('#fff', 0.1) : alpha('#000', 0.06);
