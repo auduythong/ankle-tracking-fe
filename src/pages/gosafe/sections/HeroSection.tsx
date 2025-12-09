@@ -153,7 +153,12 @@ const HeroSection = ({ isDark, primaryColor, secondaryColor }: HeroSectionProps)
                   whileTap={{ scale: 0.95 }}
                   variant="contained"
                   size="large"
-                  href="#products"
+                  onClick={() => {
+                    const element = document.getElementById('products');
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
                   endIcon={<ArrowRight />}
                   sx={{
                     bgcolor: primaryColor,
@@ -178,7 +183,12 @@ const HeroSection = ({ isDark, primaryColor, secondaryColor }: HeroSectionProps)
                   whileTap={{ scale: 0.95 }}
                   variant="outlined"
                   size="large"
-                  href="#contact"
+                  onClick={() => {
+                    const element = document.getElementById('contact');
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
                   sx={{
                     borderColor: alpha('#fff', 0.3),
                     color: '#fff',
