@@ -1,0 +1,523 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="./favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="./styles.css" />
+
+    <title>Captive Portal</title>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KGF0Y4N8ZP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+
+      gtag('config', 'G-KGF0Y4N8ZP');
+    </script>
+  </head>
+  <body>
+    <div id="errorHint" style="color: red"></div>
+    <div id="addContainer"></div>
+    <div
+      id="loadingOverlay"
+      style="
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 20px;
+      "
+    >
+      Loading...
+    </div>
+
+    <script type="text/javascript">
+      // Bản đồ lỗi
+      var errorHintMap = {
+        '-1': 'General error.',
+        '-1001': 'Invalid request parameters.',
+        '-41506': 'Invalid Authorization Information.',
+        '-41500': 'Invalid authentication type.',
+        '-41501': 'Failed to authenticate.',
+        '-41529': 'Incorrect username or password.',
+        '-41530': 'Connecting to the RADIUS server times out.'
+      };
+
+      // var submitUrl = getQueryString("scheme") + "://" + getQueryString("target") + ":" + getQueryString("targetPort") + "/portal/radius/auth";
+
+      var submitUrl = 'http://10.247.11.134:5055/v1/login_wifi/submit_access';
+      //submitUrl = "/portal/radius/auth";
+      var clientMac = getQueryString('clientMac');
+      var clientIp = getQueryString('clientIp');
+      var apMac = getQueryString('apMac');
+      var gatewayMac = getQueryString('gatewayMac');
+      var ssidName = getQueryString('ssidName');
+      var vid = getQueryString('vid');
+      var radioId = getQueryString('radioId');
+      var originUrl = decodeURIComponent(getQueryString('originUrl'));
+      var authType = 2;
+      var destUrl = '';
+      var buttonTextMain = '';
+      let timer;
+      let countdown = 5;
+      var imgUrl = '';
+      var videoUrl = '';
+      var bannerUrl = '';
+
+      var submitData = {
+        clientMac: clientMac,
+        clientIp: clientIp,
+        apMac: apMac,
+        ssidName: ssidName,
+        radioId: radioId,
+        originUrl: originUrl,
+        authType: authType,
+        username: 'guest',
+        password: 'guest'
+      };
+
+      var xhr;
+
+      function updateButtonState(button, state) {
+        if (state === 'countdown') {
+          button.classList.add('countdown');
+          button.disabled = true;
+        } else if (state === 'activated') {
+          button.classList.remove('countdown');
+          button.classList.add('activated');
+          button.disabled = false;
+        }
+      }
+
+      async function doSubmit() {
+        if (submitData.apMac == null || submitData.apMac == '') {
+          submitData.apMac = undefined;
+        }
+
+        if (submitData.gatewayMac == null || submitData.gatewayMac == '') {
+          submitData.gatewayMac = undefined;
+        }
+        await fetch(submitUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+          },
+          body: JSON.stringify(submitData)
+        })
+          .then((response) => {
+            showFullScreenLoading();
+            if (response.ok) {
+              npm;
+              return response.json();
+            } else {
+              throw new Error(response.statusText);
+            }
+          })
+          .then((data) => {
+            showFullScreenLoading();
+            var code = data.errorCode;
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+
+            var submitAccessLogin = {
+              type: 'record_login',
+              macAddressNAS: getQueryString('apMac'),
+              ipAddressNAS: '10.247.4.113',
+              ipAddressClient: getQueryString('clientIp'),
+              macAddressClient: getQueryString('clientMac'),
+              loginStatus: code === 0 ? 'success' : 'failed',
+              loginFailedReason: errorHintMap[code]
+            };
+
+            var accessLoginApiUrl = 'http://10.247.11.134:5055/v1/login_wifi/record_login';
+
+            return fetch(accessLoginApiUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'Access-Control-Allow-Origin': 'https://wifi.vtctelecom.com.vn',
+                'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+              },
+              body: JSON.stringify(submitAccessLogin)
+            })
+              .then(() => {
+                showFullScreenLoading();
+
+                if (code === 0) {
+                  if (/android|unknown|redmi|samsung|huawei|pixel/i.test(userAgent)) {
+                    window.open(destUrl, '_system');
+                  } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                    window.location.href = destUrl;
+                  } else {
+                    window.location.href = destUrl;
+                  }
+                } else {
+                  document.getElementById('errorHint').innerHTML = errorHintMap[code];
+                  if (errorCode !== 0) {
+                    hideFullScreenLoading();
+                  }
+                }
+              })
+              .catch((error) => {
+                hideFullScreenLoading();
+                console.error('Error occurred while submitting access login:', error);
+              });
+          })
+          .catch((error) => {
+            hideFullScreenLoading();
+            document.getElementById('errorHint').innerHTML = error.message;
+          });
+      }
+
+      function loadAdSettings() {
+        var adApiUrl = 'http://10.247.11.134:5055/v1/ad_management/get_ad';
+
+        fetch(adApiUrl)
+          .then((response) => {
+            if (response.ok) {
+              hideFullScreenLoading();
+
+              return response.json();
+            } else {
+              hideFullScreenLoading();
+              throw new Error('Failed to load advertisement settings.');
+            }
+          })
+          .then((data) => {
+            renderAd(data.data[0]);
+          })
+          .catch((error) => {
+            document.getElementById('errorHint').innerHTML = error.message;
+          });
+
+        var submitAccess = {
+          type: 'record_access',
+          macAddressNAS: getQueryString('apMac'),
+          ipAddressNAS: '10.247.4.113',
+          ipAddressClient: getQueryString('clientIp'),
+          macAddressClient: getQueryString('clientMac'),
+          loginStatus: '',
+          loginFailedReason: ''
+        };
+
+        var accessApiUrl = 'http://10.247.11.134:5055/v1/login_wifi/record_login';
+
+        fetch(accessApiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            'Access-Control-Allow-Origin': 'https://wifi.vtctelecom.com.vn',
+            'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+          },
+          body: JSON.stringify(submitAccess)
+        }).catch((error) => {
+          console.error('Error occurred while recording access:', error);
+        });
+      }
+
+      function updateBannerImage(imageUrl) {
+        var bannerImg = document.querySelector('#bannerImg');
+        if (bannerImg) {
+          bannerImg.src = imageUrl;
+        }
+      }
+
+      function updateVideo(videoUrl) {
+        var bannerVideo = document.querySelector('#bannerVideo');
+        if (bannerVideo) {
+          bannerVideo.src = videoUrl;
+          bannerVideo.load();
+          bannerVideo.autoplay = true;
+          bannerUrl = videoUrl;
+          bannerVideo.playsInline = true;
+          bannerVideo.style.display = 'none';
+        }
+      }
+      function showFullScreenLoading() {
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        loadingOverlay.style.display = 'flex'; // Hiển thị overlay
+      }
+
+      function hideFullScreenLoading() {
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        loadingOverlay.style.display = 'none'; // Ẩn overlay
+      }
+
+      function loadImage(imgPath) {
+        var imageUrlPath = imgPath.replace('/uploads', ''); // Loại bỏ '/uploads'
+        var imgApiUrl = 'http://10.247.11.134:5055' + imageUrlPath;
+
+        fetch(imgApiUrl, {
+          method: 'GET',
+          headers: {
+            'Access-Control-Allow-Origin': 'https://wifi.vtctelecom.com.vn',
+            'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+          }
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.blob(); // Trả về dữ liệu dạng blob
+            } else {
+              throw new Error('Failed to load image: ' + response.statusText);
+            }
+          })
+          .then((blob) => {
+            var blobUrl = URL.createObjectURL(blob);
+            updateBannerImage(blobUrl);
+          })
+          .catch((error) => {
+            console.error('Error occurred while fetching image:', error);
+          });
+      }
+
+      function loadVideo(videoPath) {
+        var videoUrlPath = videoPath.replace('/uploads', ''); // Loại bỏ '/uploads'
+        var videoApiUrl = 'http://10.247.11.134:5055' + videoUrlPath;
+
+        fetch(videoApiUrl, {
+          method: 'GET',
+          headers: {
+            'Access-Control-Allow-Origin': 'https://wifi.vtctelecom.com.vn',
+            'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+          }
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.blob(); // Trả về dữ liệu dạng blob
+            } else {
+              throw new Error('Failed to load video: ' + response.statusText);
+            }
+          })
+          .then((blob) => {
+            var blobUrl = URL.createObjectURL(blob);
+            updateVideo(blobUrl); // Truyền URL vào updateVideo
+          })
+          .catch((error) => {
+            console.error('Error occurred while fetching video:', error);
+          });
+      }
+
+      function disableButtonWithCountdown(button) {
+        const submitBtn = document.getElementById('submitBtn');
+        button.classList.add('disabled');
+        button.classList.remove('enabled');
+        button.onclick = (e) => e.preventDefault(); // Disable clicking during countdown
+        submitBtn.disabled = true;
+        submitBtn.style.cursor = 'not-allowed';
+        timer = setInterval(() => {
+          countdown--;
+          document.getElementById('countdown').textContent = countdown;
+
+          if (countdown <= 0) {
+            clearInterval(timer);
+            button.classList.remove('disabled');
+            button.classList.add('enabled');
+            button.textContent = buttonTextMain;
+            button.onclick = null; // Enable clicking
+            submitBtn.disabled = false;
+            submitBtn.style.cursor = 'pointer';
+          }
+        }, 1000);
+      }
+
+      function renderAd(settings) {
+        const adContainer = document.getElementById('addContainer');
+        destUrl = settings.destination_url;
+        adContainer.innerHTML = ''; // Xóa nội dung hiện tại
+        const buttonText = settings.button_text || 'Đang xử lý';
+        const imageUrl = settings.image_url;
+        const videoUrl = settings.video_url;
+        const backgroundColor = settings.background_color;
+        const buttonColor = settings.button_color;
+
+        // Hàm thiết lập nút submit với đếm ngược
+        function setupSubmitButton(buttonText, countdown, isEnabled = false) {
+          const buttonHTML = `
+          <button id="submitBtn"
+            style="display: inline-block; margin-top: 10px; padding: 10px 20px; color: white;
+                  background-color: ${buttonColor}; border: none; border-radius: 5px; cursor: ${isEnabled ? 'pointer' : 'not-allowed'};">
+            ${buttonText} (<span id="countdown">${countdown}</span>s)
+          </button>`;
+          return buttonHTML;
+        }
+
+        // Hàm đếm ngược và kích hoạt nút
+        function enableButtonAfterCountdown(submitBtn, countdown) {
+          const countdownSpan = document.getElementById('countdown');
+          let remainingTime = countdown;
+          const interval = setInterval(() => {
+            remainingTime -= 1;
+            countdownSpan.textContent = remainingTime;
+
+            if (remainingTime <= 0) {
+              clearInterval(interval);
+              submitBtn.disabled = false;
+              submitBtn.style.cursor = 'pointer';
+            }
+          }, 1000);
+        }
+
+        if (settings.ad_type === 'banner') {
+          // Load banner
+          loadImage(imageUrl);
+          adContainer.innerHTML = `
+          <div style="background-color: ${backgroundColor}; padding: 20px; text-align: center; display: flex; flex-direction: column;">
+            <img id="bannerImg" src="${imageUrl}" alt="Banner" style="max-width: 100%;" />
+            ${setupSubmitButton(buttonText, countdown)}
+          </div>`;
+
+          const submitBtn = document.getElementById('submitBtn');
+          submitBtn.disabled = true;
+          enableButtonAfterCountdown(submitBtn, countdown);
+          submitBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            showFullScreenLoading();
+            doSubmit();
+          });
+        } else if (settings.ad_type === 'video') {
+          // Load video
+          loadVideo(videoUrl);
+          adContainer.innerHTML = `
+          <div style="background-color: ${backgroundColor}; padding: 20px; text-align: center; display: flex; flex-direction: column; position: relative;">
+            <!-- Placeholder để giữ chiều cao trước khi video load -->
+            <div id="videoPlaceholder" style="width: 100%; max-width: 100%; height: 100%; background-color: #000; display: flex; align-items: center; justify-content: center;">
+                <img id="videoThumbnail" src="${videoUrl}" style="width: 100%; height: auto; object-fit: cover;" alt="Video Thumbnail" />
+                <div id="videoOverlay" style="position: absolute; text-align: center;">
+                  <button id="playButton" style="background-color: ${buttonColor}; color: white; border: none; border-radius: 50%; padding: 20px 25px; font-size: 30px; cursor: pointer">
+                    ▶
+                  </button>
+                  <div style="margin-top: 10px; font-size: 18px; color: white;text-transform: uppercase;"><b>Xem quảng cáo để truy cập wifi</b></div>
+                </div>
+            </div>
+
+            <video id="bannerVideo" src="${videoUrl}" style="max-width: 100%; height: auto; display: none;"></video>
+            <button id="submitBtn" title="Xem quảng cáo để truy cập wifi"
+              style="display: inline-block; margin-top: 20px; padding: 10px 20px; color: white; background-color: ${buttonColor};
+              border: none; border-radius: 5px; cursor: not-allowed;" disabled>
+              ${buttonText} (<span id="countdown">${settings.non_skip || 5}</span>s)
+            </button>
+          </div>`;
+
+          const bannerVideo = document.getElementById('bannerVideo');
+          const playButton = document.getElementById('playButton');
+          const videoOverlay = document.getElementById('videoOverlay');
+          const submitBtn = document.getElementById('submitBtn');
+          const videoPlaceholder = document.getElementById('videoPlaceholder');
+          const videoThumbnail = document.getElementById('videoThumbnail');
+
+          submitBtn.disabled = true;
+          submitBtn.style.cursor = 'not-allowed';
+
+          let playTime = 0;
+          const requiredPlayTime = settings.non_skip || 5;
+
+          bannerVideo.addEventListener('loadeddata', function () {
+            // Tạo một thẻ video ẩn để xử lý thumbnail
+            const tempVideo = document.createElement('video');
+            tempVideo.src = bannerUrl;
+            tempVideo.crossOrigin = 'anonymous'; // Đảm bảo việc lấy hình ảnh không bị lỗi CORS
+
+            // Khi video được load, thực hiện seek đến 2 giây
+            tempVideo.addEventListener('loadeddata', function () {
+              tempVideo.currentTime = 2; // Seek đến 2 giây
+
+              // Chờ seek xong
+              tempVideo.addEventListener('seeked', function onSeeked() {
+                // Tạo canvas để vẽ khung hình từ video
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+
+                // Đặt kích thước canvas bằng kích thước video
+                canvas.width = tempVideo.videoWidth;
+                canvas.height = tempVideo.videoHeight;
+
+                // Vẽ khung hình tại thời điểm 2 giây lên canvas
+                context.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+
+                // Lấy URL của hình ảnh từ canvas và gán vào src của thumbnail
+                videoThumbnail.src = canvas.toDataURL('image/png');
+
+                // Ẩn placeholder khi thumbnail đã sẵn sàng
+
+                // Xóa sự kiện sau khi xử lý xong
+                tempVideo.removeEventListener('seeked', onSeeked);
+              });
+            });
+          });
+          playButton.addEventListener('click', () => {
+            videoOverlay.style.display = 'none';
+            bannerVideo.style.display = 'block';
+            videoPlaceholder.style.display = 'none';
+            bannerVideo.play();
+          });
+          bannerVideo.addEventListener('timeupdate', () => {
+            playTime = Math.floor(bannerVideo.currentTime);
+            const remainingTime = Math.max(requiredPlayTime - playTime, 0);
+            document.getElementById('countdown').textContent = remainingTime;
+
+            if (playTime >= requiredPlayTime) {
+              submitBtn.disabled = false;
+              submitBtn.style.cursor = 'pointer';
+            }
+          });
+
+          // bannerVideo.addEventListener("play", () => {
+          //   const interval = setInterval(() => {
+          //     if (!bannerVideo.paused && !bannerVideo.ended) {
+          //       playTime += 1;
+          //       const remainingTime = Math.max(requiredPlayTime - playTime, 0);
+          //       document.getElementById("countdown").textContent = remainingTime;
+
+          //       if (playTime >= requiredPlayTime) {
+          //         submitBtn.disabled = false;
+          //         submitBtn.style.cursor = "pointer";
+          //         clearInterval(interval);
+          //       }
+          //     }
+          //   }, 1000);
+          // });
+
+          submitBtn.addEventListener('click', (event) => {
+            event.preventDefault();
+            showFullScreenLoading();
+            doSubmit();
+          });
+        } else {
+          // Unsupported ad type
+          adContainer.innerHTML = `<div style="color: red;">Unsupported ad type.</div>`;
+        }
+      }
+
+      function getQueryString(name) {
+        var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null && r != '') return unescape(r[2].replace(/\+/g, '%20'));
+        return null;
+      }
+
+      // Khởi động khi trang load
+      window.onload = function () {
+        loadAdSettings();
+      };
+    </script>
+  </body>
+</html>

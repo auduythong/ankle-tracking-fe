@@ -1,0 +1,1 @@
+export const renderValue = (val: string) => (val ? val : '--');

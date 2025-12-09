@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.ant-upload-wrapper .ant-upload-list .ant-upload-list-item-container {
+  margin-top: 10px !important;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-transition-delay: 9999s;
+  transition-delay: 9999s;
+}
+
+.ant-picker {
+  border-radius: 8px;
+  font-family: 'Inter var';
+}
+
+@keyframes slideWave {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.sticky-left-last::after,
+.sticky-right-first::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  pointer-events: none;
+  transition: box-shadow 0.3s;
+  box-shadow: none;
+}
+
+.scroll-left .sticky-left-last::after {
+  box-shadow: 5px 0 8px -2px rgba(0, 0, 0, 0.3);
+}
+
+.scroll-right .sticky-right-first::after {
+  box-shadow: -5px 0 8px -2px rgba(0, 0, 0, 0.3);
+}
+
+.scroll-left.scroll-right .sticky-left-last::after {
+  box-shadow: 5px 0 8px -2px rgba(0, 0, 0, 0.3);
+}
+
+.scroll-left.scroll-right .sticky-right-first::after {
+  box-shadow: -5px 0 8px -2px rgba(0, 0, 0, 0.3);
+}
+
+/* Mỗi slot trong timeline sẽ cao 60px */
+.fc .fc-timegrid-slot {
+  height: 40px;
+}
+
+/* Nếu muốn slot có khoảng cách giữa các dòng */
+.fc .fc-timegrid-slot > .fc-timegrid-slot-frame {
+  min-height: 40px;
+}
+
+.fc-timegrid-event {
+  box-shadow: none !important;
+}

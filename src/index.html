@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Capative Portal</title>
+</head>
+<body>
+  <div id="errorHint" style="color: red"></div>
+  <div id="addContainer"></div>
+
+  <script type="text/javascript">
+    // Bản đồ lỗi
+    var errorHintMap = {
+      '-1': 'General error.',
+      '-1001': 'Invalid request parameters.',
+      '-41506': 'Invalid Authorization Information.',
+      '-41500': 'Invalid authentication type.',
+      '-41501': 'Failed to authenticate.',
+      '-41529': 'Incorrect username or password.',
+      '-41530': 'Connecting to the RADIUS server times out.'
+    };
+
+    // var submitUrl = getQueryString("scheme") + "://" + getQueryString("target") + ":" + getQueryString("targetPort") + "/portal/radius/auth";
+
+    var submitUrl = 'http://10.247.4.113:8088/portal/radius/auth';
+    submitUrl = '/portal/radius/auth';
+    var clientMac = getQueryString('clientMac');
+    var clientIp = getQueryString('clientIp');
+    var apMac = getQueryString('apMac');
+    var gatewayMac = getQueryString('gatewayMac');
+    var ssidName = getQueryString('ssidName');
+    var vid = getQueryString('vid');
+    var radioId = getQueryString('radioId');
+    var originUrl = decodeURIComponent(getQueryString('originUrl'));
+    var authType = 2;
+
+    var submitData = {
+      clientMac: clientMac,
+      clientIp: clientIp,
+      apMac: apMac,
+      ssidName: ssidName,
+      radioId: radioId,
+      originUrl: originUrl,
+      authType: authType,
+      username: 'test',
+      password: 'test'
+    };
+
+    var xhr;
+
+    function doSubmit() {
+      console.log('Submitting data:', submitData);
+      console.log('Submit URL:', submitUrl);
+
+      if (submitData.apMac == null || submitData.apMac == '') {
+        submitData.apMac = undefined;
+      }
+
+      if (submitData.gatewayMac == null || submitData.gatewayMac == '') {
+        submitData.gatewayMac = undefined;
+      }
+      xhr = null;
+      if (window.XMLHttpRequest) {
+        xhr = new XMLHttpRequest();
+      } else {
+        xhr = new ActiveXObject('Microsoft.XMLHTTP');
+      }
+      xhr.open('POST', submitUrl, true);
+      // xhr.setRequestHeader( "Content-Type" , "text/plain;charset=utf-8" );
+      xhr.setRequestHeader('Content-Type', 'application/json;charset=utf-8');
+      // fill in domain name of the request web page
+      xhr.setRequestHeader('Access-Control-Allow-Origin', 'http://10.247.4.113:8088');
+      // xhr.setRequestHeader('Access-Control-Allow-Origin', 'http://10.247.4.113');
+      xhr.setRequestHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          var code = JSON.parse(xhr.responseText).errorCode;
+          if (code === 0) {
+            location.href = originUrl;
+          } else {
+            document.getElementById('errorHint').innerHTML = errorHintMap[code];
+          }
+        } else {
+          document.getElementById('errorHint').innerHTML = xhr.statusText;
+        }
+      };
+      console.log(xhr);
+
+      xhr.send(JSON.stringify(submitData));
+    }
+
+    function loadAdSettings() {
+      // Gọi API lấy dữ liệu quảng cáo
+      var adApiUrl = 'https://wifi.vtctelecom.com.vn/api/vtc_wifi_management/v1/ad_management/get_ad'; // Thay bằng API thực tế
+      var xhrAd = new XMLHttpRequest();
+      xhrAd.open('GET', adApiUrl, true);
+      xhrAd.onload = function () {
+        if (xhrAd.status === 200) {
+          var adSettings = JSON.parse(xhrAd.responseText);
+          console.log('ok');
+          renderAd(adSettings.data[0]);
+        } else {
+          document.getElementById('errorHint').innerHTML = 'Failed to load advertisement settings.';
+        }
+      };
+      xhrAd.onerror = function () {
+        document.getElementById('errorHint').innerHTML = 'Error occurred while fetching advertisement settings.';
+      };
+      xhrAd.send();
+    }
+
+    function renderAd(settings) {
+      var adContainer = document.getElementById('addContainer');
+
+      adContainer.innerHTML = ''; // Clear existing content
+      var buttonText = settings.button_text || 'Proceed';
+
+      if (settings.ad_type === 'banner') {
+        adContainer.innerHTML = `
+        <div style="background-color: ${settings.background_color}; padding: 20px; text-align: center; display:flex; flex-direction:column">
+          <img src="${settings.image_url}" alt="Banner" style="max-width: 100%;" />
+         <a id="submitBtn" href="#" 
+              style="display: inline-block; margin-top: 10px; padding: 10px 20px; color: white; background-color: ${settings.button_color}; text-decoration: none; ; border 1px;  border-radius: 5px">
+              ${buttonText}
+          </a>
+        </div>`;
+
+        document.getElementById('submitBtn').addEventListener('click', function (event) {
+          event.preventDefault();
+          doSubmit(() => {
+            window.location.href = destinationUrl;
+          });
+        });
+      } else if (settings.ad_type === 'video') {
+        adContainer.innerHTML = `
+        <div style="background-color: ${settings.background_color}; padding: 20px; text-align: center; display:flex; flex-direction:column">
+          <video style="max-width: 100%; height: auto;" ${settings.non_skip ? '' : 'controls'}>
+            <source src="${settings.video_url}" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+            <a id="submitBtn" href="#" 
+              style="display: inline-block; margin-top: 10px; padding: 10px 20px; color: white; background-color: ${
+                settings.button_color
+              }; text-decoration: none; ; border 1px;  border-radius: 5px">
+              ${buttonText}
+          </a>
+        </div>`;
+        document.getElementById('submitBtn').addEventListener('click', function (event) {
+          event.preventDefault();
+          doSubmit(() => {
+            window.location.href = destinationUrl;
+          });
+        });
+      } else {
+        adContainer.innerHTML = `<div style="color: red;">Unsupported ad type.</div>`;
+      }
+    }
+
+    function getQueryString(name) {
+      var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i');
+      var r = window.location.search.substr(1).match(reg);
+      if (r != null && r != '') return unescape(r[2].replace(/\+/g, '%20'));
+      return null;
+    }
+
+    // Khởi động khi trang load
+    window.onload = function () {
+      loadAdSettings();
+    };
+  </script>
+</body>

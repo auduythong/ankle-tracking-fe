@@ -1,0 +1,113 @@
+.custom-popup .maplibregl-popup-content {
+  padding: 0;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: white;
+  color: #333;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-width: 300px;
+}
+
+.custom-popup .maplibregl-popup-tip {
+  border-top-color: #ffffff;
+}
+
+.popup-content {
+  overflow: hidden;
+}
+
+.popup-header {
+  border-radius: 12px 12px 0 0;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 15px 20px 12px;
+  border-bottom: 1px solid #ccc;
+  backdrop-filter: blur(10px);
+}
+
+.popup-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.popup-body {
+  padding: 12px 16px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.value {
+  font-size: 14px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+}
+
+.custom-popup .maplibregl-popup-close-button {
+  color: #333;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  right: 10px;
+  top: 10px;
+}
+
+.custom-popup .maplibregl-popup-close-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+  transition: all 0.2s ease;
+}
+
+/* Animation khi popup xuất hiện */
+.custom-popup .maplibregl-popup-content {
+  animation: popupFadeIn 0.3s ease-out;
+}
+
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Dark theme variant */
+.custom-popup.dark-theme .maplibregl-popup-content {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.custom-popup.dark-theme .maplibregl-popup-tip {
+  border-top-color: #2c3e50;
+}

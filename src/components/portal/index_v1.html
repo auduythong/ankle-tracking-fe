@@ -1,0 +1,542 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en">
+  <meta charset="UTF-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="./favicon.ico" />
+
+  <title>Captive Portal</title>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-KGF0Y4N8ZP"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-KGF0Y4N8ZP");
+  </script>
+
+
+  <style>
+    /* Reset mặc định */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+      background-color: #f9f9f9;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #007bff;
+    }
+
+    #errorHint {
+      color: red;
+      margin-bottom: 10px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    #addContainer {
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .banner {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .banner img {
+      max-width: 100%;
+      border-radius: 5px;
+    }
+
+    .banner video {
+      max-width: 100%;
+      border-radius: 5px;
+    }
+
+    .button-container {
+      text-align: center;
+      margin-top: 20px;
+      padding: 10px 20px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 10px 20px;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 5px;
+      border: none;
+      background-color: gray;
+      cursor: not-allowed;
+      transition: background-color 0.3s ease, cursor 0.3s ease;
+    }
+
+    .button.enabled {
+      background-color: #007bff;
+      cursor: pointer;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 12px;
+      color: #888;
+    }
+
+    .button.countdown {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* Nút đã được kích hoạt */
+    .button.activated {
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 20px;
+      }
+
+      #addContainer {
+        width: 100%;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .banner {
+        display: flex;
+        justify-content: center;
+        padding: 20px;
+      }
+    }
+
+    /* Mobile view */
+    @media (max-width: 1023px) {
+      .banner {
+        display: block;
+        padding: 10px;
+      }
+
+      .video {
+        width: 100%;
+      }
+}
+  </style>
+</head>
+<body>
+  <div id="errorHint" style="color: red"></div>
+  <div id="addContainer"></div>
+
+  <script type="text/javascript">
+    // Bản đồ lỗi
+    var errorHintMap = {
+      "-1": "General error.",
+      "-1001": "Invalid request parameters.",
+      "-41506": "Invalid Authorization Information.",
+      "-41500": "Invalid authentication type.",
+      "-41501": "Failed to authenticate.",
+      "-41529": "Incorrect username or password.",
+      "-41530": "Connecting to the RADIUS server times out.",
+    };
+
+    // var submitUrl = getQueryString("scheme") + "://" + getQueryString("target") + ":" + getQueryString("targetPort") + "/portal/radius/auth";
+
+    var submitUrl = "http://10.247.11.134:5055/v1/login_wifi/submit_access";
+    //submitUrl = "/portal/radius/auth";
+    var clientMac = getQueryString("clientMac");
+    var clientIp = getQueryString("clientIp");
+    var apMac = getQueryString("apMac");
+    var gatewayMac = getQueryString("gatewayMac");
+    var ssidName = getQueryString("ssidName");
+    var vid = getQueryString("vid");
+    var radioId = getQueryString("radioId");
+    var originUrl = decodeURIComponent(getQueryString("originUrl"));
+    var authType = 2;
+    var destUrl = "";
+    var buttonTextMain = "";
+    let timer;
+    let countdown = 5;
+    var imgUrl = "";
+    var videoUrl = "";
+
+    var submitData = {
+      clientMac: clientMac,
+      clientIp: clientIp,
+      apMac: apMac,
+      ssidName: ssidName,
+      radioId: radioId,
+      originUrl: originUrl,
+      authType: authType,
+      username: "guest",
+      password: "guest",
+    };
+
+    var xhr;
+
+    function updateButtonState(button, state) {
+      if (state === 'countdown') {
+        button.classList.add('countdown');
+        button.disabled = true;
+      } else if (state === 'activated') {
+        button.classList.remove('countdown');
+        button.classList.add('activated');
+        button.disabled = false;
+      }
+    }
+
+    function doSubmit() {
+      if (submitData.apMac == null || submitData.apMac == "") {
+        submitData.apMac = undefined;
+      }
+
+      if (submitData.gatewayMac == null || submitData.gatewayMac == "") {
+        submitData.gatewayMac = undefined;
+      }
+      xhr = null;
+      if (window.XMLHttpRequest) {
+        xhr = new XMLHttpRequest();
+      } else {
+        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+      }
+      xhr.open("POST", submitUrl, true);
+      // xhr.setRequestHeader( "Content-Type" , "text/plain;charset=utf-8" );
+      xhr.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+      // fill in domain name of the request web page
+      // xhr.setRequestHeader("Access-Control-Allow-Origin", "https://wifi.vtctelecom.com.vn");
+      xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+      xhr.setRequestHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+      xhr.setRequestHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+          // console.log(xhr.responseText);
+
+          var code = JSON.parse(xhr.responseText).errorCode;
+          var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+          if (code === 0) {
+            var submitAccessLoginSuccess = {
+              type: "record_login",
+              macAddressNAS: getQueryString("apMac"),
+              ipAddressNAS: "10.247.4.113",
+              ipAddressClient: getQueryString("clientIp"),
+              macAddressClient: getQueryString("clientMac"),
+              loginStatus: "success",
+              loginFailedReason: errorHintMap[code],
+            };
+            var accessLoginApiUrl = "http://10.247.11.134:5055/v1/login_wifi/record_login"; // Thay bằng API thực tế
+            var xhrAccessLogin = new XMLHttpRequest();
+            xhrAccessLogin.open("POST", accessLoginApiUrl, true);
+            xhrAccessLogin.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+            xhrAccessLogin.setRequestHeader("Access-Control-Allow-Origin", "https://wifi.vtctelecom.com.vn");
+            xhrAccessLogin.setRequestHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+            xhrAccessLogin.setRequestHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            xhrAccessLogin.send(JSON.stringify(submitAccessLoginSuccess));
+            if (/android/i.test(userAgent)) {
+              // Android: mở trang trong trình duyệt
+              window.open(destUrl, "_system");
+            } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+              // iOS: chuyển hướng màn hình
+              location.href = destUrl;
+            } else {
+              // Thiết bị khác: xử lý mặc định
+              location.href = destUrl;
+            }
+          } else {
+            document.getElementById("errorHint").innerHTML = errorHintMap[code];
+            var submitAccessLogin = {
+              type: "record_login",
+              macAddressNAS: getQueryString("apMac"),
+              ipAddressNAS: "10.247.4.113",
+              ipAddressClient: getQueryString("clientIp"),
+              macAddressClient: getQueryString("clientMac"),
+              loginStatus: "failed",
+              loginFailedReason: errorHintMap[code],
+            };
+            var accessLoginApiUrl = "http://10.247.11.134:5055/v1/login_wifi/record_login"; // Thay bằng API thực tế
+            var xhrAccessLogin = new XMLHttpRequest();
+            xhrAccessLogin.open("POST", accessLoginApiUrl, true);
+            xhrAccessLogin.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+            xhrAccessLogin.setRequestHeader("Access-Control-Allow-Origin", "https://wifi.vtctelecom.com.vn");
+            xhrAccessLogin.setRequestHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+            xhrAccessLogin.setRequestHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+            xhrAccessLogin.send(JSON.stringify(submitAccessLogin));
+            
+          }
+        } else {
+          document.getElementById("errorHint").innerHTML = xhr.statusText;
+        }
+      };
+      // console.log(xhr);
+
+      xhr.send(JSON.stringify(submitData));
+    }
+    
+
+    function loadAdSettings() {
+      // Gọi API lấy dữ liệu quảng cáo
+      var adApiUrl = "http://10.247.11.134:5055/v1/ad_management/get_ad"; // Thay bằng API thực tế
+      var xhrAd = new XMLHttpRequest();
+      xhrAd.open("GET", adApiUrl, true);
+      xhrAd.onload = function () {
+        if (xhrAd.status === 200) {
+          var adSettings = JSON.parse(xhrAd.responseText);
+          renderAd(adSettings.data[0]);
+        } else {
+          document.getElementById("errorHint").innerHTML = "Failed to load advertisement settings.";
+        }
+      };
+      xhrAd.onerror = function () {
+        document.getElementById("errorHint").innerHTML = "Error occurred while fetching advertisement settings.";
+      };
+      xhrAd.send();
+
+      var submitAccess = {
+        type: "record_access",
+        macAddressNAS: getQueryString("apMac"),
+        ipAddressNAS: "10.247.4.113",
+        ipAddressClient: getQueryString("clientIp"),
+        macAddressClient: getQueryString("clientMac"),
+        loginStatus: "",
+        loginFailedReason: "",
+      };
+      // var accessApiUrl = "https://wifi.vtctelecom.com.vn/api/vtc_wifi_management/v1/login_wifi/record_login"; // Thay bằng API thực tế
+      var accessApiUrl = "http://10.247.11.134:5055/v1/login_wifi/record_login"; // Thay bằng API thực tế
+      var xhrAccess = new XMLHttpRequest();
+      xhrAccess.open("POST", accessApiUrl, true);
+      xhrAccess.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+      xhrAccess.setRequestHeader("Access-Control-Allow-Origin", "https://wifi.vtctelecom.com.vn");
+      xhrAccess.setRequestHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+      xhrAccess.setRequestHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+      xhrAccess.send(JSON.stringify(submitAccess));
+    }
+
+    function updateBannerImage(imageUrl) {
+      var bannerImg = document.querySelector("#bannerImg");
+      if (bannerImg) {
+        bannerImg.src = imageUrl;
+      }
+    }
+
+    function updateVideo(videoUrl) {
+      var bannerVideo = document.querySelector("#bannerVideo");
+      if (bannerVideo) {
+        bannerVideo.src = videoUrl;
+        bannerVideo.load();
+        bannerVideo.autoplay = true
+      }
+    }
+
+    function loadImage(imgPath) {
+      var imageUrlPath = imgPath.replace("/uploads", ""); // Loại bỏ '/uploads'
+      imgApiUrl = "http://10.247.11.134:5055" + imageUrlPath;
+      var xhrImg = new XMLHttpRequest();
+      xhrImg.open("GET", imgApiUrl, true);
+      // xhrImg.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+      xhrImg.setRequestHeader("Access-Control-Allow-Origin", "https://wifi.vtctelecom.com.vn");
+      xhrImg.setRequestHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+      xhrImg.setRequestHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+      xhrImg.responseType = "blob"; // Đặt kiểu dữ liệu trả về là blob
+      xhrImg.onload = function () {
+        if (xhrImg.status === 200) {
+          var blobUrl = URL.createObjectURL(xhrImg.response);
+          updateBannerImage(blobUrl);
+        } else {
+          console.error("Failed to load image: " + xhrImg.statusText);
+        }
+      };
+      xhrImg.onerror = function () {
+        console.error("Error occurred while fetching image.");
+      };
+      xhrImg.send();
+    }
+
+    function loadVideo(videoPath) {
+      var videoUrlPath = videoPath.replace("/uploads", ""); // Loại bỏ '/uploads'
+      videoApiUrl = "http://10.247.11.134:5055" + videoUrlPath;
+      var xhrVideo = new XMLHttpRequest();
+      xhrVideo.open("GET", videoApiUrl, true);
+      // xhrImg.setRequestHeader("Content-Type", "application/json;charset=utf-8");
+      xhrVideo.setRequestHeader("Access-Control-Allow-Origin", "https://wifi.vtctelecom.com.vn");
+      xhrVideo.setRequestHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+      xhrVideo.setRequestHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+      xhrVideo.responseType = "blob"; // Đặt kiểu dữ liệu trả về là blob
+      xhrVideo.onload = function () {
+        if (xhrVideo.status === 200) {
+          var blobUrl = URL.createObjectURL(xhrVideo.response);
+          updateVideo(blobUrl); // Truyền URL vào updateVideo
+        } else {
+          console.error("Failed to load video: " + xhrVideo.statusText);
+        }
+      };
+      xhrVideo.onerror = function () {
+        console.error("Error occurred while fetching video.");
+      };
+      xhrVideo.send();
+    }
+
+    function disableButtonWithCountdown(button) {
+      const submitBtn = document.getElementById("submitBtn");
+      button.classList.add("disabled");
+      button.classList.remove("enabled");
+      button.onclick = (e) => e.preventDefault(); // Disable clicking during countdown
+      submitBtn.disabled = true;
+      submitBtn.style.cursor = "not-allowed";
+      timer = setInterval(() => {
+        countdown--;
+        document.getElementById("countdown").textContent = countdown;
+
+        if (countdown <= 0) {
+          clearInterval(timer);
+          button.classList.remove("disabled");
+          button.classList.add("enabled");
+          button.textContent = buttonTextMain;
+          button.onclick = null; // Enable clicking
+          submitBtn.disabled = false;
+          submitBtn.style.cursor = "pointer";
+        }
+      }, 1000);
+    }
+
+    function renderAd(settings) {
+      var adContainer = document.getElementById("addContainer");
+      destUrl = settings.destination_url;
+      adContainer.innerHTML = ""; // Clear existing content
+      var buttonText = settings.button_text || "Đang xử lý";
+      // var imageUrl = settings.image_url.replace("/uploads", ""); // Loại bỏ '/uploads'
+      var imageUrl = settings.image_url;
+      var vidUrl = settings.video_url;
+      if(settings.ad_type ===  "banner"){
+        loadImage(imageUrl);
+      } else if(settings.ad_type === "video"){
+        loadVideo(vidUrl);
+      }
+
+      // imageUrl = "http://10.247.11.134:5055" + imageUrl;
+      buttonTextMain = buttonText;
+      if (settings.ad_type === "banner") {
+        adContainer.innerHTML = `
+          <div style="background-color: ${settings.background_color}; padding: 20px; text-align: center; display:flex; flex-direction:column">
+            <img id="bannerImg" src="${imgUrl}" alt="Banner" style="max-width: 100%;" />
+          <!-- <a id="submitBtn" href="#"
+                style="display: inline-block; margin-top: 10px; padding: 10px 20px; color: white; background-color: ${settings.button_color}; text-decoration: none; ; border 1px;  border-radius: 5px">
+                ${buttonText} (<span id="countdown">${countdown}</span>)
+            </a> -->
+            <button id="submitBtn"
+            style="display: inline-block; margin-top: 10px; padding: 10px 20px; color: white; background-color: ${settings.button_color}; border: none; border-radius: 5px; cursor: not-allowed;">
+            ${buttonText} (<span id="countdown">${countdown}</span>s)
+          </button>
+
+          </div>`;
+
+        document.getElementById("submitBtn").addEventListener("click", function (event) {
+          event.preventDefault();
+          doSubmit();
+        });
+        const submitBtn = document.getElementById("submitBtn");
+        disableButtonWithCountdown(submitBtn);
+      } else if (settings.ad_type === "video") {
+        adContainer.innerHTML = `
+          <div style="background-color: ${settings.background_color}; padding: 20px; text-align: center; display:flex; flex-direction:column">
+            <video id="bannerVideo" src="${videoUrl}"  style="max-width: 100%; height: auto;" ${settings.non_skip ? "" : "controls"}>
+            </video>
+            <button id="submitBtn"
+            style="display: inline-block; margin-top: 10px; padding: 10px 20px; color: white; background-color: ${settings.button_color}; border: none; border-radius: 5px; cursor: not-allowed;">
+            ${buttonText} (<span id="countdown">${settings.non_skip || 5}</span>s)
+          </div>`;
+        const countdownSpan = document.getElementById("countdown");
+        let countdown = settings.non_skip || 5; // Thời gian non-skip từ settings
+        let playTime = 0; // Tổng thời gian đã phát
+        let countdownInterval;
+        const submitBtn = document.getElementById("submitBtn");
+        submitBtn.disabled = true;
+        submitBtn.style.cursor = "not-allowed";
+        bannerVideo.addEventListener("play", function () {
+
+          if (!countdownInterval) {
+      
+            countdownInterval = setInterval(() => {
+              if (!bannerVideo.paused && !bannerVideo.ended) {
+                playTime += 1;
+
+                // Cập nhật thời gian đếm ngược
+                const remainingTime = Math.max(countdown - playTime, 0);
+                countdownSpan.textContent = remainingTime;
+
+                if (playTime >= countdown) {
+                  // Nếu đã phát đủ thời gian required, kích hoạt nút
+                  submitBtn.disabled = false;
+                  submitBtn.style.cursor = "pointer";
+                  submitBtn.style.backgroundColor = settings.button_color;
+                  clearInterval(countdownInterval);
+                }
+              }
+            }, 1000); // Kiểm tra mỗi giây
+          }
+        });
+        document.getElementById("submitBtn").addEventListener("click", function (event) {
+          event.preventDefault();
+          doSubmit();
+        });
+        bannerVideo.addEventListener("pause", function () {
+          clearInterval(countdownInterval);
+          countdownInterval = null;
+        });
+      } else {
+        adContainer.innerHTML = `<div style="color: red;">Unsupported ad type.</div>`;
+      }
+    }
+
+    function getQueryString(name) {
+      var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+      var r = window.location.search.substr(1).match(reg);
+      if (r != null && r != "") return unescape(r[2].replace(/\+/g, "%20"));
+      return null;
+    }
+
+    // Khởi động khi trang load
+    window.onload = function () {
+      loadAdSettings();
+    };
+  </script>
+</body>

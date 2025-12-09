@@ -1,0 +1,26 @@
+.fc-day-today {
+  background-color: transparent !important;
+}
+
+.fc-toolbar-title {
+  display: none;
+}
+
+/* Hide the header completely if needed */
+.fc-header-toolbar {
+  display: none;
+}
+
+/* Adjust calendar padding/margins */
+.fc {
+  padding: 0;
+}
+
+.fc-license-message {
+  display: none;
+}
+
+.fc-h-event {
+  background-color: unset;
+  border: none;
+}

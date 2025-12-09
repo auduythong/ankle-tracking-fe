@@ -1,0 +1,94 @@
+import { Box, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
+import { useEffect, useMemo, useState } from 'react';
+import useConfig from 'hooks/useConfig';
+import { ThemeMode } from 'types/config';
+
+// Components
+import GosafeNavbar from './components/GosafeNavbar';
+import HeroSection from './sections/HeroSection';
+import ProductsSection from './sections/ProductsSection';
+import SpecsSection from './sections/SpecsSection';
+import ContactSection from './sections/ContactSection';
+import FAQSection from './sections/FAQSection';
+import { faqs, faqsGosafe } from 'pages/landing/data';
+import Footer from './sections/Footer';
+
+const GosafeLanding = () => {
+  const { onChangeMode, mode, onChangeLocalization, i18n } = useConfig();
+  const [isDark, setIsDark] = useState(mode === ThemeMode.DARK);
+  const primaryColor = '#2772ed';
+  const secondaryColor = '#4a90e2';
+  console.log(onChangeMode, onChangeLocalization);
+  useEffect(() => {
+    setIsDark(mode === ThemeMode.DARK);
+  }, [mode]);
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode: isDark ? 'dark' : 'light',
+          primary: {
+            main: '#2d5eaf'
+          },
+          secondary: {
+            main: '#4a90e2'
+          },
+          background: {
+            default: isDark ? '#020617' : '#ffffff',
+            paper: isDark ? '#0f172a' : '#ffffff'
+          },
+          text: {
+            primary: isDark ? '#f8fafc' : '#0f172a',
+            secondary: isDark ? '#94a3b8' : '#64748b'
+          }
+        },
+        typography: {
+          fontFamily: 'Inter var',
+          h1: { fontWeight: 800 },
+          h2: { fontWeight: 700 },
+          h3: { fontWeight: 700 },
+          button: { fontWeight: 600 }
+        },
+        shape: {
+          borderRadius: 12
+        },
+        components: {
+          MuiButton: {
+            styleOverrides: {
+              root: {
+                textTransform: 'none',
+                borderRadius: 8
+              }
+            }
+          }
+        }
+      }),
+    [isDark]
+  );
+
+  return (
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box sx={{ bgcolor: 'background.default', minHeight: '100vh', overflowX: 'hidden' }}>
+        <GosafeNavbar
+          primaryColor={primaryColor}
+          isDark={isDark}
+          currentLang={i18n}
+          onToggleTheme={() => onChangeMode(mode === ThemeMode.DARK ? ThemeMode.LIGHT : ThemeMode.DARK)}
+          onToggleLanguage={() => onChangeLocalization(i18n === 'vi' ? 'en' : 'vi')}
+        />
+
+        <HeroSection isDark={isDark} primaryColor={primaryColor} secondaryColor={secondaryColor} />
+        <ProductsSection isDark={isDark} primaryColor={primaryColor} secondaryColor={secondaryColor} />
+        <SpecsSection isDark={isDark} primaryColor={primaryColor} secondaryColor={secondaryColor} />
+        <FAQSection faqs={faqsGosafe} isDark={isDark} primaryColor={primaryColor} secondaryColor={secondaryColor} />
+
+        <ContactSection isDark={isDark} primaryColor={primaryColor} secondaryColor={secondaryColor} />
+        <Footer isDark={isDark} primaryColor={primaryColor} />
+      </Box>
+    </ThemeProvider>
+  );
+};
+
+export default GosafeLanding;

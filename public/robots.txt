@@ -1,0 +1,6 @@
+# robots.txt for Ankle Tracker - VTC Telecom
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://wifi.vtctelecom.com.vn/sitemap.xml

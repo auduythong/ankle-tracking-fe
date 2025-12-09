@@ -1,0 +1,32 @@
+name: Restrict Push to Branches
+
+on:
+  push:
+    branches:
+      - prod
+      - test
+
+jobs:
+  restrict-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Restrict non-admin users from pushing to prod
+        if: github.ref == 'refs/heads/prod'
+        run: |
+          # Fetch the user who is pushing
+          PUSHER=$(echo ${{ github.actor }})
+
+          # List of allowed users (Admins)
+          ADMIN_USERS=("TuanVoVTC")
+
+          # Check if the pusher is in the admin list
+          if [[ ! " ${ADMIN_USERS[@]} " =~ " ${PUSHER} " ]]; then
+            echo "You are not allowed to push directly to prod. Only admins can push to prod."
+            exit 1
+          fi
+          echo "Admin user detected, push to prod allowed."
+
+      - name: Push allowed to test branch
+        if: github.ref == 'refs/heads/test'
+        run: echo "Push to test branch is allowed."
