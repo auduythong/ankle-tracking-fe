@@ -1,28 +1,25 @@
-import { Box, Container, Stack, Typography, alpha, useTheme } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { Box, Container, Stack, Typography, alpha } from '@mui/material';
 import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
 import {
+  Chart,
+  Gps,
+  Map1,
+  Message,
+  Mobile,
   Monitor,
   Notification,
-  Map1,
   Profile,
-  Clock,
-  Chart,
-  SecurityUser,
-  Mobile,
   ScanBarcode,
-  Gps,
-  Calendar,
-  Message,
-  Task,
-  Heart,
-  ShieldTick
+  SecurityUser,
+  ShieldTick,
+  Task
 } from 'iconsax-react';
-import oneStopSolution from '/public/images/One-stop-solution-for-offenders-tracking.png';
-import liveMonitoring from '/public/images/Live-Monitoring---Offender-Tracking-System.png';
+import { useRef } from 'react';
+import { FormattedMessage } from 'react-intl';
 import flexibleGeofence from '/public/images/Flexible-Geofence---Offender-Tracking-System.png';
+import liveMonitoring from '/public/images/Live-Monitoring---Offender-Tracking-System.png';
 import multiPlatform from '/public/images/Multi-Platform-Offender-Tracking-System.png';
+import oneStopSolution from '/public/images/One-stop-solution-for-offenders-tracking.png';
 
 interface SolutionsSectionProps {
   isDark: boolean;
@@ -215,8 +212,6 @@ const ParallaxImage = ({
 };
 
 const SolutionGroup = ({ group, index, isDark, primaryColor, secondaryColor }: any) => {
-  const theme = useTheme();
-
   return (
     <Box sx={{ mb: { xs: 15, md: 25 }, position: 'relative' }}>
       <Container maxWidth="xl">
