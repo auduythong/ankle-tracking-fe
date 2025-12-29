@@ -250,7 +250,7 @@ const SpecsSection = ({ isDark, primaryColor, secondaryColor }: SpecsSectionProp
         specs: [
           {
             label: intl.formatMessage({ id: 'gosafe-specs-label-integration', defaultMessage: 'Tích hợp' }),
-            value: intl.formatMessage({ id: 'gosafe-specs-value-seamless', defaultMessage: 'Hoạt động liền mạch với Elite' })
+            value: intl.formatMessage({ id: 'gosafe-specs-value-seamless', defaultMessage: 'Hoạt động liền mạch với thiết bị giám sát' })
           },
           {
             label: intl.formatMessage({ id: 'gosafe-specs-label-indoor', defaultMessage: 'Định vị trong nhà' }),
@@ -258,7 +258,7 @@ const SpecsSection = ({ isDark, primaryColor, secondaryColor }: SpecsSectionProp
           },
           {
             label: intl.formatMessage({ id: 'gosafe-specs-label-move-alert', defaultMessage: 'Cảnh báo di chuyển' }),
-            value: intl.formatMessage({ id: 'gosafe-specs-value-send-g737', defaultMessage: 'Gửi đến Elite' })
+            value: intl.formatMessage({ id: 'gosafe-specs-value-send-g737', defaultMessage: 'Gửi đến thiết bị giám sát' })
           }
         ]
       }
@@ -266,7 +266,7 @@ const SpecsSection = ({ isDark, primaryColor, secondaryColor }: SpecsSectionProp
 
     return [
       {
-        label: intl.formatMessage({ id: 'gosafe-specs-tab-tracker', defaultMessage: 'Elite Tracker' }),
+        label: intl.formatMessage({ id: 'gosafe-specs-tab-tracker', defaultMessage: 'Electronic Tracker' }),
         icon: <DocumentCode size={20} />,
         data: g737Specs
       },

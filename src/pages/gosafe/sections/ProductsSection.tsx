@@ -54,7 +54,7 @@ interface Product {
 const getProducts = (intl: IntlShape): Product[] => [
   {
     id: 'sentinel',
-    name: intl.formatMessage({ id: 'gosafe-product-g737-name', defaultMessage: 'Elite Tracker' }),
+    name: intl.formatMessage({ id: 'gosafe-product-g737-name', defaultMessage: 'Electronic Tracker' }),
     subtitle: intl.formatMessage({ id: 'gosafe-product-g737-subtitle', defaultMessage: 'Ankle Bracelet Tracker' }),
     icon: <Location size={28} variant="Bold" />,
     images: [ankleBraceletGpsTracker1, ankleBraceletGpsTracker3, ankleBraceletGpsTracker4, ankleBraceletGpsTracker5],
@@ -132,14 +132,14 @@ const getProducts = (intl: IntlShape): Product[] => [
   },
   {
     id: 'beacon',
-    name: intl.formatMessage({ id: 'gosafe-product-beacon-name', defaultMessage: 'Elite Home Beacon' }),
+    name: intl.formatMessage({ id: 'gosafe-product-beacon-name', defaultMessage: 'Electronic Home Beacon' }),
     subtitle: intl.formatMessage({ id: 'gosafe-product-beacon-subtitle', defaultMessage: 'Indoor Positioning Device' }),
     icon: <Bluetooth size={28} variant="Bold" />,
     images: [g737HomeBeacon],
     description: intl.formatMessage({
       id: 'gosafe-product-beacon-desc',
       defaultMessage:
-        'Device supporting indoor positioning, helping Elite monitor more accurately when the offender is in areas without GPS.'
+        'Device supporting indoor positioning, helping the monitoring device track more accurately when the offender is in areas without GPS.'
     }),
     highlight: intl.formatMessage({ id: 'gosafe-product-beacon-highlight', defaultMessage: 'Indoor Tracking' }),
     badge: intl.formatMessage({ id: 'gosafe-product-beacon-badge', defaultMessage: 'ACCESSORY' }),
@@ -167,7 +167,7 @@ const getProducts = (intl: IntlShape): Product[] => [
         subtitle: intl.formatMessage({ id: 'gosafe-product-beacon-detail-1-subtitle', defaultMessage: 'Mở rộng giám sát' }),
         content: intl.formatMessage({
           id: 'gosafe-product-beacon-detail-1-content',
-          defaultMessage: 'Hoạt động liền mạch với Elite, mở rộng vùng giám sát indoor.'
+          defaultMessage: 'Hoạt động liền mạch với thiết bị giám sát, mở rộng vùng giám sát indoor.'
         }),
         icon: <Bluetooth size={32} variant="Bold" />,
         image: iotImg
@@ -187,7 +187,7 @@ const getProducts = (intl: IntlShape): Product[] => [
         subtitle: intl.formatMessage({ id: 'gosafe-product-beacon-detail-3-subtitle', defaultMessage: 'An toàn tối đa' }),
         content: intl.formatMessage({
           id: 'gosafe-product-beacon-detail-3-content',
-          defaultMessage: 'Gửi ngay tới Elite khi beacon bị tháo/gỡ.'
+          defaultMessage: 'Gửi ngay tới thiết bị giám sát khi beacon bị tháo/gỡ.'
         }),
         icon: <ShieldSecurity size={32} variant="Bold" />,
         image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=800&q=80'
@@ -206,13 +206,13 @@ const getProducts = (intl: IntlShape): Product[] => [
   },
   {
     id: 'powerbank',
-    name: intl.formatMessage({ id: 'gosafe-product-powerbank-name', defaultMessage: 'Elite Power Bank' }),
+    name: intl.formatMessage({ id: 'gosafe-product-powerbank-name', defaultMessage: 'Electronic Power Bank' }),
     subtitle: intl.formatMessage({ id: 'gosafe-product-powerbank-subtitle', defaultMessage: 'Dedicated Power Bank' }),
     icon: <BatteryFull size={28} variant="Bold" />,
     images: [gpsTrackerPowerBank],
     description: intl.formatMessage({
       id: 'gosafe-product-powerbank-desc',
-      defaultMessage: 'High-performance power bank, extending the operating time of Elite monitoring device in harsh environments.'
+      defaultMessage: 'High-performance power bank, extending the operating time of the monitoring device in harsh environments.'
     }),
     highlight: intl.formatMessage({ id: 'gosafe-product-powerbank-highlight', defaultMessage: 'High Performance' }),
     badge: intl.formatMessage({ id: 'gosafe-product-powerbank-badge', defaultMessage: 'ACCESSORY' }),
